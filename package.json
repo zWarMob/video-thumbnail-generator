@@ -1,7 +1,7 @@
 {
   "name": "video-preview-thumbnail-generator",
-  "version": "1.0.0",
-  "description": "Generate thumbnails for an html5 supported video",
+  "version": "1.0.1",
+  "description": "Generate thumbnails for an html5 supported video in the browser",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
