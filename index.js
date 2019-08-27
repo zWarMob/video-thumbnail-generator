@@ -5,7 +5,7 @@
  * @param {!HTMLElement} outputElement The element snapshots from the video will be extracted to (separate images)
  * @return {void}
  */
-exports.captureVideo = function(htmlVideoElement,outputElement) {
+captureVideo = function(htmlVideoElement,outputElement) {
     "use strict";
     var canv = document.createElement("canvas");
     canv.getContext('2d');
