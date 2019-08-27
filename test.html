@@ -1,99 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title></title>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <style>
-  	img{padding:3px;}
-  </style>
+    <title>Thumbnail Generator</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="index.js"></script>
+    <style>
+        img{padding:3px;}
+    </style>
 </head>
 <body>
 <video id="video" controls="controls">
-    <source src="../videoP/videos/0014700765.mp4" />
+    <source src="videoplayback.mp4" />
 </video>
  
-<button id="capture">Capture</button>
+<button id="capture" onclick="generateThumbnailSprite()">Capture</button>
  
 <div id="output"></div>
 <script>
-    "use strict";
- 
- var canv = document.createElement("canvas");
- canv.getContext('2d');
-var iW=166;
-var iH=120;
-var dur=0;
-var counter=0;
- function capVid(){
- 	console.log(dur);
-        for(var i=1;i<6;i++){
-        	var n = i*3000;
-        	setTimeout(function(){
-        		for(var j=1;j<21;j++){
-	        		var m = j*150;
-	        		setTimeout(function(){
-	        			counter += 1;
-	        			var dur = (counter*video.duration)/100;
-	        			video.currentTime = dur ;
-	        			console.log(dur);
-	        			captureImg();
-	        		},m);
-        		}
-        	},n);
-        }
- }
-
-    var video, $output;
-    var scale = 0.5;
- 
-    var initialize = function() {
-        $output = $("#output");
-        video = $("#video").get(0);
-        $("#capture").click(function(){
-        	captureImg();
-        });                
-    };
-
-function captureImg() {
-        var canvas2 = document.createElement("canvas");
-        canvas2.width = video.videoWidth * scale;
-        canvas2.height = video.videoHeight * scale;
-        canvas2.getContext('2d').drawImage(video, 0, 0, canvas2.width, canvas2.height);
- 		//$("#output").append(canvas2);
-
-        var dataURL = canvas2.toDataURL('image/png');
-
- 		var img = document.createElement("img");
-        img.src = canvas2.toDataURL();
-        $output.append(img);
-
- 	//	var url = img.src.replace(/^data:image\/[^;]/, 'data:application/octet-stream');
-	//	window.open(url);
-
-    //    convertURIToImageData(dataURL).then(function(imageData) {
-  	//	console.log(imageData);
-	//	});
-    };
- 
-    $(initialize);    
-
-  function convertURIToImageData(URI) {
-  return new Promise(function(resolve, reject) {
-    if (URI == null) return reject();
-    var canvas = document.createElement('canvas'),
-        context = canvas.getContext('2d'),
-        image = new Image();
-    image.addEventListener('load', function() {
-      canvas.width = image.width;
-      canvas.height = image.height;
-      context.drawImage(image, 0, 0, canvas.width, canvas.height);
-      resolve(context.getImageData(0, 0, canvas.width, canvas.height));
-    }, false);
-    image.src = URI;
-  });
-}
-
- 
+    function generateThumbnailSprite(){
+        captureVideo($("#video").get(0),$("#output").get(0));
+    }
 </script>
 </body>
 </html>
