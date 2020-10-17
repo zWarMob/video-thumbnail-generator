@@ -2,24 +2,84 @@
 <html>
 <head>
     <title>Thumbnail Generator</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+    <!--JS Zip!-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js" integrity="sha512-y3o0Z5TJF1UsKjs/jS2CDkeHN538bWsftxO9nctODL5W40nyXIbs0Pgyu7//icrQY9m6475gLaVr39i/uh/nLA==" crossorigin="anonymous"></script>
+    
+    <!--File Saver-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js" integrity="sha512-csNcFYJniKjJxRWRV1R7fvnXrycHP6qDR21mgz1ZP55xY5d+aHLfo9/FcGDQLfn2IfngbAHd8LdfsagcCqgTcQ==" crossorigin="anonymous"></script>    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    
+    <!--Material Design Light-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    
     <script src="index.js"></script>
-    <style>
-        img{padding:3px;}
-    </style>
 </head>
 <body>
-<video id="video" controls="controls">
-    <source src="videoplayback.mp4" />
-</video>
- 
-<button id="capture" onclick="generateThumbnailSprite()">Capture</button>
- 
+<!--https://stackoverflow.com/a/32708998-->
+
+<p id="progress"></p>
+
+<h3>Video input</h3>
+<input type="radio" name="vidInputType" value="own" checked><label for="own"><span title="What do you have there?"><input id="vidInput" type="file" accept="video/*" /></span></label><br>
+<input type="radio" name="vidInputType" value="url" disabled><label for="url"><span title="Video from the interwebz!">Enter URL</span></label><br>
+<br>
+
+<h3>Thumbnail size (make this work last maybe. depending on file type load info)</h3>
+<input type="range" name="thumbSizeRange" min="0" max="50"><label for="thumbSize"></label>
+<br>
+
+<h3>Thumbnail frequency:</h3>
+<input type="radio" name="thumbFrequencyType" value="duration" checked><label for="duration"><span title="Longer video, more thumbnails">Based on duration (thumbnails per minute)</span></label><input id="thumbsPerMinuteInput" type="number" /><br>
+<input type="radio" name="thumbFrequencyType" value="fixed" disabled><label for="fixed"><span title="Specific number of frames">Fixed number</span></label><br>
+<input type="radio" name="thumbFrequencyType" value="frames" disabled><label for="frames"><span title="More frames, more thumbnail pictures">Based on frames</span></label><br>
+<br>
+
+<button id="btnGenerate">Generate thumbnails</button>
+
 <div id="output"></div>
 <script>
-    function generateThumbnailSprite(){
-        captureVideo($("#video").get(0),$("#output").get(0));
+
+
+  document.querySelector("#btnGenerate").addEventListener("click", ()=>{
+    let frequencyType = document.querySelector('input[type="radio"][name="thumbFrequencyType"]:checked').value;
+    let vidInputType = document.querySelector('input[type="radio"][name="vidInputType"]:checked').value;
+    //callback for each frame to options too
+
+    console.log(frequencyType, vidInputType)
+
+    switch(vidInputType) {
+      case "own":
+        let vidInput = document.querySelector("#vidInput");
+        let frequency;
+        switch(frequencyType){
+          case "duration":
+            frequency = parseInt(document.getElementById("thumbsPerMinuteInput").value)
+            break;
+          case "fixed":
+            // TODO TO-DO TO DO
+            break;
+          case "frames":
+            // TODO TO-DO TO DO
+            break;
+        }
+        
+        // TODO TO-DO TO DO
+        generateThumbnails(vidInput, {
+          "frequencyType": frequencyType,
+          "frequency": frequency
+        });
+        break;
+      case "url":
+        // TODO TO-DO TO DO
+        // xhr to get vid and pass blob/data to our generator
+        break;
     }
+  });
+  
+  //document.querySelector('input').addEventListener('change', extractFrames, false);
+  
 </script>
 </body>
 </html>
