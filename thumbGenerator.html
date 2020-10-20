@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Thumbnail Generator</title>
+    
+    <!--JS Zip!-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js" integrity="sha512-y3o0Z5TJF1UsKjs/jS2CDkeHN538bWsftxO9nctODL5W40nyXIbs0Pgyu7//icrQY9m6475gLaVr39i/uh/nLA==" crossorigin="anonymous"></script>
+    
+    <!--File Saver-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js" integrity="sha512-csNcFYJniKjJxRWRV1R7fvnXrycHP6qDR21mgz1ZP55xY5d+aHLfo9/FcGDQLfn2IfngbAHd8LdfsagcCqgTcQ==" crossorigin="anonymous"></script>    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    
+    <!--DropZone.js-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.1/min/dropzone.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.2/dropzone.css" integrity="sha512-CmjeEOiBCtxpzzfuT2remy8NP++fmHRxR3LnsdQhVXzA3QqRMaJ3heF9zOB+c1lCWSwZkzSOWfTn1CdqgkW3EQ==" crossorigin="anonymous" />
+    
+    <!--Material Design Light-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    
+    <!--Fonts-->
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@1,700&family=Nunito&display=swap" rel="stylesheet">
+    
+    <!-- Thumbnail Generator-->
+    <script src="index.js"></script>
+
+    <link rel="stylesheet" href="thumbGenerator.css">
+</head>
+<body>
+<!--https://stackoverflow.com/a/32708998-->
+
+<h1>Thumbnail generator</h1>
+
+<div class="steps-container-wrap">
+  <div id="steps-container" class="steps" data-step="1">
+    <div class="step0 step"></div>
+    <div class="card-wide mdl-card mdl-shadow--2dp step1 step">
+      <div class="mdl-card__title">
+        <h2 class="mdl-card__title-text">video input</h2>
+      </div>
+      <div class="mdl-card__supporting-text">
+        Either upload a video or enter the url of one (allowed format: mp4)
+      </div>
+      <div class="choices">
+        <div class="mdl-card__media	mdl-card--border">
+          <div action="/file-upload" class="" id="video-dropzone">
+            <div class="dz-default dz-message"><button class="dz-button" type="button">Drop files here to upload</button></div>
+          </div>
+        </div>
+        <div class="flex padded"> or </div>
+        <div class="mdl-card__media	mdl-card--border flex disabled">
+          <div>
+            Video URL: <input type="text" />*
+            <br>
+            <span class="suppered">*Supported formats: mp4</span>
+          </div>
+        </div>
+      </div>
+      <div class="mdl-card__actions mdl-card--border">
+        <div class="mdl-layout-spacer"></div>
+        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect next_step">
+          > thumbnail size
+        </a>
+      </div>
+    </div>
+    <div class="card-wide mdl-card mdl-shadow--2dp step2 step">
+      <div class="mdl-card__title">
+        <h2 class="mdl-card__title-text">thumbnail size</h2>
+      </div>
+      <div class="mdl-card__supporting-text">
+        Thumbnail size (make this work last maybe. depending on file type load info)
+      </div>
+      <div class="choices">
+        <div class="mdl-card__media	mdl-card--border disabled">
+          <input type="range" name="thumbSizeRange" min="0" max="50"><label for="thumbSize"></label>
+        </div>
+        <div class="flex padded"> or </div>
+        <div class="mdl-card__media	mdl-card--border disabled">
+          choice 1
+        </div>
+      </div>
+      <div class="mdl-card__actions mdl-card--border">
+        <div class="mdl-layout-spacer"></div>
+        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect next_step">
+          > thumbnail frequency
+        </a>
+      </div>
+    </div>
+    <div class="card-wide mdl-card mdl-shadow--2dp step3 step">
+      <div class="mdl-card__title">
+        <h2 class="mdl-card__title-text">thumbnail frequency</h2>
+      </div>
+      <div class="mdl-card__supporting-text">
+      </div>
+      <div class="choices">
+        <div class="mdl-card__media	mdl-card--border">
+          <input type="radio" name="thumbFrequencyType" value="duration" checked><label for="duration"><span title="Longer video, more thumbnails">Based on duration<br>(thumbnails per minute)</span></label>
+          <input id="thumbsPerMinuteInput" type="number" value="60"/>
+
+        </div>
+        <div class="flex padded"> or </div>
+        <div class="mdl-card__media	mdl-card--border disabled">
+          <input type="radio" name="thumbFrequencyType" value="fixed" disabled><label for="fixed"><span title="Specific number of frames">Fixed number</span></label>
+
+        </div>
+        <div class="flex padded"> or </div>
+        <div class="mdl-card__media	mdl-card--border disabled">
+          <input type="radio" name="thumbFrequencyType" value="frames" disabled><label for="frames"><span title="More frames, more thumbnail pictures">Based on frames</span></label><br>
+
+        </div>
+      </div>
+      <div class="mdl-card__actions mdl-card--border">
+        <div class="mdl-layout-spacer"></div>
+        <a id="btnGenerate" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+          Generate
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="mist"></div>
+</div>
+
+<script>
+  //set accepted files acceptedFiles https://www.dropzonejs.com/#config-acceptedFiles
+  var videoDropzone = new Dropzone("div#video-dropzone", { url: null, maxFiles: 1,autoProcessQueue: false});
+  setTimeout(()=>{document.querySelector("#video-dropzone").classList.add("dropzone");},0);
+
+  var stepsContainer = document.querySelector("#steps-container");
+
+  document.querySelectorAll(".next_step").forEach((e)=>{
+    e.addEventListener("click",(x)=>{
+      stepsContainer.dataset.step = parseInt(stepsContainer.dataset.step) + 1;
+    });
+  });
+
+  document.querySelector("#btnGenerate").addEventListener("click", ()=>{
+    let frequencyType = document.querySelector('input[type="radio"][name="thumbFrequencyType"]:checked').value;
+    let vidInputType = "own"/*document.querySelector('input[type="radio"][name="vidInputType"]:checked').value*/;
+    //callback for each frame to options too
+
+    switch(vidInputType) {
+      case "own":
+        let vidFile = videoDropzone.files[0];
+        let frequency;
+        switch(frequencyType){
+          case "duration":
+            frequency = parseInt(document.getElementById("thumbsPerMinuteInput").value)
+            break;
+          case "fixed":
+            // TODO TO-DO TO DO
+            break;
+          case "frames":
+            // TODO TO-DO TO DO
+            break;
+        }
+        
+        // TODO TO-DO TO DO
+        generateThumbnails(vidFile, {
+          "frequencyType": frequencyType,
+          "frequency": frequency
+        });
+        break;
+      case "url":
+        // TODO TO-DO TO DO
+        // xhr to get vid and pass blob/data to our generator
+        break;
+    }
+  });
+  
+  //document.querySelector('input').addEventListener('change', extractFrames, false);
+  
+</script>
+</body>
+</html>

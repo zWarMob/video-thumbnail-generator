@@ -1,6 +1,6 @@
 /**
  * Operates in the browser.
- * @param {!HTMLInputElement} vidInput Input containing the video we want to generate thumbnails for
+ * @param {!HTMLInputElement} vidFile File from Input containing the video we want to generate thumbnails for
  * @param {object} options Overwrite the default settings for thumbnail frequency and size
  * @return {Array} 
  */
@@ -11,7 +11,7 @@ options = {
           "frequency": frequency
         }
         */
-function generateThumbnails(vidInput, options) {
+function generateThumbnails(vidFile, options) {
   var canvas = document.createElement('canvas');
   var ctx = canvas.getContext('2d');
   var array = [];
@@ -25,7 +25,7 @@ function generateThumbnails(vidInput, options) {
 
   // loadmetadata will fire after the source has loaded
   // inside we will seek a new time and timeupdate will fire after
-  video.src = URL.createObjectURL(vidInput.files[0]);
+  video.src = URL.createObjectURL(vidFile);
   
   function initCanvas(e) {
     // TODO TO-DO TO DO
@@ -39,11 +39,6 @@ function generateThumbnails(vidInput, options) {
   function drawFrame(e) {
     if (this.currentTime < this.duration) {
       ctx.drawImage(this, 0, 0);
-      /* 
-      this will save as a Blob, less memory consumptive than toDataURL
-      a polyfill can be found at
-      https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob#Polyfill
-      */
       canvas.toBlob(saveFrame, 'image/jpeg');
       this.currentTime += 60 / options.frequency;
     }
@@ -60,16 +55,7 @@ function generateThumbnails(vidInput, options) {
   function onend(e) {
     URL.revokeObjectURL(this.src);
     var zip = new JSZip();
-    
-    // do whatever with the frames
-    /*  var img;
-      for (var i = 0; i < array.length; i++) {
-      img = new Image();
-      img.onload = revokeURL;
-      img.src = URL.createObjectURL(array[i]);
-      document.body.appendChild(img);
-    }*/
-
+   
     for(var i = 0; i < array.length; i++){
       zip.file("thumb-"+i+".jpeg", array[i]);
     }
