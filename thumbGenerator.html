@@ -58,8 +58,8 @@
       </div>
       <div class="mdl-card__actions mdl-card--border">
         <div class="mdl-layout-spacer"></div>
-        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect next_step">
-          > thumbnail size
+        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect next_step mdl-button--raised">
+          thumbnail size <i class="material-icons">navigate_next</i>
         </a>
       </div>
     </div>
@@ -80,9 +80,12 @@
         </div>
       </div>
       <div class="mdl-card__actions mdl-card--border">
+        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect previous_step">
+          <i class="material-icons">navigate_before</i> back
+        </a>
         <div class="mdl-layout-spacer"></div>
-        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect next_step">
-          > thumbnail frequency
+        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect next_step mdl-button--raised">
+          thumbnail frequency <i class="material-icons">navigate_next</i>
         </a>
       </div>
     </div>
@@ -110,8 +113,11 @@
         </div>
       </div>
       <div class="mdl-card__actions mdl-card--border">
+        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect previous_step">
+          <i class="material-icons">navigate_before</i> back
+        </a>
         <div class="mdl-layout-spacer"></div>
-        <a id="btnGenerate" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+        <a id="btnGenerate" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect mdl-button--raised">
           Generate
         </a>
       </div>
@@ -130,6 +136,11 @@
   document.querySelectorAll(".next_step").forEach((e)=>{
     e.addEventListener("click",(x)=>{
       stepsContainer.dataset.step = parseInt(stepsContainer.dataset.step) + 1;
+    });
+  });
+  document.querySelectorAll('.previous_step').forEach((e)=>{
+    e.addEventListener("click",(x)=>{
+      stepsContainer.dataset.step = parseInt(stepsContainer.dataset.step) - 1;
     });
   });
 

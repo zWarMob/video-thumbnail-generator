@@ -1,5 +1,6 @@
+*,h2{font-family: Nunito;}
 body,html{margin:0;padding:0;border:0;}
-h1{margin:0;text-align: center;}
+h1{margin:0;text-align: center;font-family: Lora;font-style: italic; font-weight: 700;color:#4f2996;padding:1em;}
 .flex{justify-content: center;align-items: center;display: flex;}
 .padded{padding:1em;}
 .suppered{color:darkgray;font-size:0.8em;font-style: italic;}
@@ -67,6 +68,7 @@ h1{margin:0;text-align: center;}
 
 .choices{
   display: flex;
+  padding: 0em 0.5em;
 }
 .choices > .mdl-card__media{
   width:100%;
