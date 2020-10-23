@@ -12,7 +12,6 @@ options = {
         }
         */
 function generateThumbnails(vidFile, options) {
-  var finished = false;
   var canvas = document.createElement('canvas');
   var ctx = canvas.getContext('2d');
   var array = [];
@@ -42,7 +41,6 @@ function generateThumbnails(vidFile, options) {
 
   function drawFrame(e) {
     if(this.duration != this.currentTime){
-      console.log("draw", this.currentTime)
       ctx.drawImage(this, 0, 0);
       canvas.toBlob(saveFrame, 'image/jpeg');
       seekVideo(this);
@@ -77,10 +75,11 @@ function generateThumbnails(vidFile, options) {
 
   function seekVideo(vid, firstFrame){
     if(options.frequencyType=="duration"){
-      console.log("seek1", finished, vid.duration, vid.currentTime, 60 / options.frequency)
-      vid.currentTime += 60 / options.frequency;
+      if(firstFrame)
+        vid.currentTime += 60 / options.frequency / 2;
+      else
+        vid.currentTime += 60 / options.frequency;
     }else if(options.frequencyType=="fixed"){
-      console.log("seek2", finished, vid.duration, vid.currentTime, vid.duration / options.frequency)
       if(firstFrame)
         vid.currentTime += vid.duration / options.frequency / 2;
       else
