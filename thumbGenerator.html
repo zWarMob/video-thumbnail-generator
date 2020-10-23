@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Thumbnail Generator</title>
+  <meta charset="UTF-8">
+  <title>Thumbnail Generator</title>
     
     <!--JS Zip!-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js" integrity="sha512-y3o0Z5TJF1UsKjs/jS2CDkeHN538bWsftxO9nctODL5W40nyXIbs0Pgyu7//icrQY9m6475gLaVr39i/uh/nLA==" crossorigin="anonymous"></script>
@@ -23,17 +24,47 @@
     
     <!-- Thumbnail Generator-->
     <script src="index.js"></script>
-
-    <link rel="stylesheet" href="thumbGenerator.css">
+    <style>
+      .loading-page{
+        position:absolute;top:0;left:0;
+        width:100%;height:100%;
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        z-index:2;
+        background:#4f2996;
+        opacity:1;
+        transition:all 0.3s;
+      }
+    </style>
+    <script>
+      window.onload = function(){
+        //document.querySelectorAll(".steps-container-wrap")[0]
+        var loadingPage = document.querySelectorAll(".loading-page")[0];
+        setTimeout(()=>{
+          loadingPage.classList.add("invisible");
+          setTimeout(function(){loadingPage.classList.add("hidden")},300);
+        },500);
+      };
+    </script>
 </head>
 <body>
-<!--https://stackoverflow.com/a/32708998-->
-
 <h1>Thumbnail generator</h1>
+
+<div class="loading-page">
+  <div class="google-spinner">
+    <div class="spinner-inner">
+      <!--https://codepen.io/Baiqiang/pen/KAkpH-->
+    </div>
+  </div>
+</div>
+
+<div><i class="material-icons">bedtime</i><i class="material-icons">wb_sunny</i></div>
 
 <div class="steps-container-wrap">
   <div id="steps-container" class="steps" data-step="1">
     <div class="step0 step"></div>
+
     <div class="card-wide mdl-card mdl-shadow--2dp step1 step">
       <div class="mdl-card__title">
         <h2 class="mdl-card__title-text">video input</h2>
@@ -63,6 +94,7 @@
         </a>
       </div>
     </div>
+
     <div class="card-wide mdl-card mdl-shadow--2dp step2 step">
       <div class="mdl-card__title">
         <h2 class="mdl-card__title-text">thumbnail size</h2>
@@ -89,6 +121,7 @@
         </a>
       </div>
     </div>
+
     <div class="card-wide mdl-card mdl-shadow--2dp step3 step">
       <div class="mdl-card__title">
         <h2 class="mdl-card__title-text">thumbnail frequency</h2>
@@ -97,13 +130,33 @@
       </div>
       <div class="choices">
         <div class="mdl-card__media	mdl-card--border">
-          <input type="radio" name="thumbFrequencyType" value="duration" checked><label for="duration"><span title="Longer video, more thumbnails">Based on duration<br>(thumbnails per minute)</span></label>
-          <input id="thumbsPerMinuteInput" type="number" value="60"/>
-
+          <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="duration">
+            <input type="radio" id="duration" class="mdl-radio__button" name="thumbFrequencyType" value="duration" checked>
+            <span class="mdl-radio__label">Duration based (pr min)</span>
+          </label>
+          <form action="#">
+            <div class="mdl-textfield mdl-js-textfield">
+              <input id="thumbsPerMinuteInput" class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" value="60">
+              <label class="mdl-textfield__label" for="thumbsPerMinuteInput">Number...</label>
+              
+              <span class="mdl-textfield__error">Input is not a number!</span>
+            </div>
+          </form>
         </div>
         <div class="flex padded"> or </div>
-        <div class="mdl-card__media	mdl-card--border disabled">
-          <input type="radio" name="thumbFrequencyType" value="fixed" disabled><label for="fixed"><span title="Specific number of frames">Fixed number</span></label>
+        <div class="mdl-card__media	mdl-card--border">
+
+          <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="fixed">
+            <input type="radio" id="fixed" class="mdl-radio__button" name="thumbFrequencyType" value="fixed">
+            <span class="mdl-radio__label">Fixed number</span>
+          </label>
+          <form action="#">
+            <div class="mdl-textfield mdl-js-textfield">
+              <input id="thumbsTotalInput" class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" value="60">
+              <label class="mdl-textfield__label" for="thumbsTotalInput">Number...</label>
+              <span class="mdl-textfield__error">Input is not a number!</span>
+            </div>
+          </form>
 
         </div>
         <div class="flex padded"> or </div>
@@ -126,60 +179,7 @@
   <div class="mist"></div>
 </div>
 
-<script>
-  //set accepted files acceptedFiles https://www.dropzonejs.com/#config-acceptedFiles
-  var videoDropzone = new Dropzone("div#video-dropzone", { url: null, maxFiles: 1,autoProcessQueue: false});
-  setTimeout(()=>{document.querySelector("#video-dropzone").classList.add("dropzone");},0);
-
-  var stepsContainer = document.querySelector("#steps-container");
-
-  document.querySelectorAll(".next_step").forEach((e)=>{
-    e.addEventListener("click",(x)=>{
-      stepsContainer.dataset.step = parseInt(stepsContainer.dataset.step) + 1;
-    });
-  });
-  document.querySelectorAll('.previous_step').forEach((e)=>{
-    e.addEventListener("click",(x)=>{
-      stepsContainer.dataset.step = parseInt(stepsContainer.dataset.step) - 1;
-    });
-  });
-
-  document.querySelector("#btnGenerate").addEventListener("click", ()=>{
-    let frequencyType = document.querySelector('input[type="radio"][name="thumbFrequencyType"]:checked').value;
-    let vidInputType = "own"/*document.querySelector('input[type="radio"][name="vidInputType"]:checked').value*/;
-    //callback for each frame to options too
-
-    switch(vidInputType) {
-      case "own":
-        let vidFile = videoDropzone.files[0];
-        let frequency;
-        switch(frequencyType){
-          case "duration":
-            frequency = parseInt(document.getElementById("thumbsPerMinuteInput").value)
-            break;
-          case "fixed":
-            // TODO TO-DO TO DO
-            break;
-          case "frames":
-            // TODO TO-DO TO DO
-            break;
-        }
-        
-        // TODO TO-DO TO DO
-        generateThumbnails(vidFile, {
-          "frequencyType": frequencyType,
-          "frequency": frequency
-        });
-        break;
-      case "url":
-        // TODO TO-DO TO DO
-        // xhr to get vid and pass blob/data to our generator
-        break;
-    }
-  });
-  
-  //document.querySelector('input').addEventListener('change', extractFrames, false);
-  
-</script>
+<link rel="stylesheet" href="thumbGenerator.css">
+<script src="thumbGenerator.js"></script>
 </body>
 </html>
