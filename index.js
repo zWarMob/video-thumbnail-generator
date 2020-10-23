@@ -37,32 +37,16 @@ function generateThumbnails(vidFile, options) {
     canvas.width = this.videoWidth;
     canvas.height = this.videoHeight;
 
-    if(options.frequencyType=="duration"){
-      this.currentTime += 60 / options.frequency;
-    }else if(options.frequencyType=="fixed"){
-      this.currentTime += this.duration / options.frequency + 1;
-    }else{
-      //frames based
-    }
+    seekVideo(this, true);
   }
 
   function drawFrame(e) {
-      if(!finished){
-        ctx.drawImage(this, 0, 0);
-        canvas.toBlob(saveFrame, 'image/jpeg');
-      }
-        
-      if (this.currentTime != this.duration) {
-        if(options.frequencyType=="duration"){
-          this.currentTime += 60 / options.frequency;
-        }else if(options.frequencyType=="fixed"){
-          this.currentTime += this.duration / options.frequency + 1;
-        }else{
-          //frames based
-        }
-      }else{
-        finished = true;
-      }
+    if(this.duration != this.currentTime){
+      console.log("draw", this.currentTime)
+      ctx.drawImage(this, 0, 0);
+      canvas.toBlob(saveFrame, 'image/jpeg');
+      seekVideo(this);
+    }
   }
 
   function saveFrame(blob) {
@@ -89,5 +73,20 @@ function generateThumbnails(vidFile, options) {
         jQuery("#blob").text(err);
       });
     },100);
+  }
+
+  function seekVideo(vid, firstFrame){
+    if(options.frequencyType=="duration"){
+      console.log("seek1", finished, vid.duration, vid.currentTime, 60 / options.frequency)
+      vid.currentTime += 60 / options.frequency;
+    }else if(options.frequencyType=="fixed"){
+      console.log("seek2", finished, vid.duration, vid.currentTime, vid.duration / options.frequency)
+      if(firstFrame)
+        vid.currentTime += vid.duration / options.frequency / 2;
+      else
+        vid.currentTime += vid.duration / options.frequency;
+    }else{
+      //frames based
+    }
   }
 }
