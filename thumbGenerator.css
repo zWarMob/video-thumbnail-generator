@@ -265,7 +265,7 @@
 
 *,h2{font-family: Nunito;}
 body,html{margin:0;padding:0;border:0;}
-h1{margin:0;text-align: center;font-family: Lora;font-style: italic; font-weight: 700;color:#4f2996;padding:1em;}
+h1{margin:0;text-align: center;font-family: Lora;font-style: italic; font-weight: 700;color:#4f2996;padding:1em; font-size:3em;}
 .flex{justify-content: center;align-items: center;display: flex;}
 .padded{padding:1em;}
 .suppered{color:darkgray;font-size:0.8em;font-style: italic;}
@@ -314,7 +314,7 @@ h1{margin:0;text-align: center;font-family: Lora;font-style: italic; font-weight
 }
 
 .step{
-  align-self: baseline;
+  /* align-self: baseline; */
   margin:0 5%;
   flex:none;
   width:60%;
