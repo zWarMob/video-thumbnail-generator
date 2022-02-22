@@ -1,55 +1,91 @@
-//https://stackoverflow.com/a/32708998
+/**
+ * Operates in the browser.
+ * @param {!HTMLInputElement} vidFile File from Input containing the video we want to generate thumbnails for
+ * @param {object} options Overwrite the default settings for thumbnail frequency and size
+ * @return {Array} 
+ */
 
-//set accepted files acceptedFiles https://www.dropzonejs.com/#config-acceptedFiles
-var videoDropzone = new Dropzone("div#video-dropzone", { url: null, maxFiles: 1,autoProcessQueue: false});
-setTimeout(()=>{document.querySelector("#video-dropzone").classList.add("dropzone");},100);
+/*
+options = {
+          "frequencyType": frequencyType,
+          "frequency": frequency
+        }
+        */
+function generateThumbnails(vidFile, options) {
+  var canvas = document.createElement('canvas');
+  var ctx = canvas.getContext('2d');
+  var array = [];
 
-var stepsContainer = document.querySelector("#steps-container");
+  // we will extract the frames from the video in the browser
+  var video = document.createElement('video');
+  video.muted = true;
+  
+  // on firefox, timeupdate fires twice (unlike seek)
+  // had to change to circumvent frame duplication
+  video.addEventListener('seeked', drawFrame, false);
+  video.addEventListener('ended', onend, false);
+  video.addEventListener('loadedmetadata', initCanvas, false);
 
-document.querySelectorAll(".next_step").forEach((e)=>{
-e.addEventListener("click",(x)=>{
-    stepsContainer.dataset.step = parseInt(stepsContainer.dataset.step) + 1;
-});
-});
-document.querySelectorAll('.previous_step').forEach((e)=>{
-e.addEventListener("click",(x)=>{
-    stepsContainer.dataset.step = parseInt(stepsContainer.dataset.step) - 1;
-});
-});
+  // loadmetadata will fire after the source has loaded
+  // inside we will seek a new time and timeupdate will fire after
+  video.src = URL.createObjectURL(vidFile);
+  
+  function initCanvas(e) {
+    // TODO TO-DO TO DO
+    // Change thumbnail size based on options?
+    canvas.width = this.videoWidth;
+    canvas.height = this.videoHeight;
 
-document.querySelector("#btnGenerate").addEventListener("click", ()=>{
-let frequencyType = document.querySelector('input[type="radio"][name="thumbFrequencyType"]:checked').value;
-let vidInputType = "own"/*document.querySelector('input[type="radio"][name="vidInputType"]:checked').value*/;
-//callback for each frame to options too
+    seekVideo(this, true);
+  }
 
-switch(vidInputType) {
-    case "own":
-    let vidFile = videoDropzone.files[0];
-    let frequency;
-    switch(frequencyType){
-        case "duration":
-            frequency = parseInt(document.getElementById("thumbsPerMinuteInput").value)
-            break;
-        case "fixed":
-            frequency = parseInt(document.getElementById("thumbsTotalInput").value)
-            break;
-        case "frames":
-            frequency = parseInt(document.getElementById("thumbsPerFramesInput").value)
-            // TODO TO-DO TO DO
-            break;
+  function drawFrame(e) {
+    if(this.duration != this.currentTime){
+      ctx.drawImage(this, 0, 0);
+      canvas.toBlob(saveFrame, 'image/jpeg');
+      seekVideo(this);
     }
-    
-    // TODO TO-DO TO DO
-    generateThumbnails(vidFile, {
-        "frequencyType": frequencyType,
-        "frequency": frequency
-    });
-    break;
-    case "url":
-    // TODO TO-DO TO DO
-    // xhr to get vid and pass blob/data to our generator
-    break;
-}
-});
+  }
 
-//document.querySelector('input').addEventListener('change', extractFrames, false);
+  function saveFrame(blob) {
+    array.push(blob);
+  }
+
+  function revokeURL(e) {
+    URL.revokeObjectURL(this.src);
+  }
+  
+  function onend(e) {
+    //figure out why is timeout necessary. Last picture hasn't been added to the list when onend fires
+    setTimeout(()=>{
+      URL.revokeObjectURL(this.src);
+      var zip = new JSZip();
+    
+      for(var i = 0; i < array.length; i++){
+        zip.file("thumb-"+i+".jpeg", array[i]);
+      }
+      
+      zip.generateAsync({type:"blob"}).then(function (blob) { // 1) generate the zip file
+        saveAs(blob, "thumbnails.zip");                          // 2) trigger the download
+      }, function (err) {
+        jQuery("#blob").text(err);
+      });
+    },100);
+  }
+
+  function seekVideo(vid, firstFrame){
+    if(options.frequencyType=="duration"){
+      if(firstFrame)
+        vid.currentTime += 60 / options.frequency / 2;
+      else
+        vid.currentTime += 60 / options.frequency;
+    }else if(options.frequencyType=="fixed"){
+      if(firstFrame)
+        vid.currentTime += vid.duration / options.frequency / 2;
+      else
+        vid.currentTime += vid.duration / options.frequency;
+    }else{
+      //frames based
+    }
+  }
+}
